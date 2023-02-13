@@ -73,5 +73,20 @@ func main(){
 				fmt.Printf("Number of tickets requested is invalid. \n")
 			}
 		}
-	}	
+	}
+	
+	city := "London"
+
+	switch city {
+	case "New York": 
+		//execute code for booking New York conference tickets
+	case "Singapore", "Hong Kong":
+		//execute code for booking Singapore &  hong Long conference tickets
+	case "London", "Berlin":
+		//execute code for booking London or Berlin conference tickets
+	case "Mexico City":
+		//execute code for booking Mexico City conference tickets
+	default: 
+		fmt.Println("No valid city selected.")
+	}
 }
