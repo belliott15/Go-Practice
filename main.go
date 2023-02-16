@@ -1,17 +1,26 @@
 package main
+
 //when importing multiple packages you lock them in parenthesis and put them on their own line
 import (
 	"fmt"
+	"strconv"
 	"strings"
-	"Go-Practice/helper"
-	) 
+)
 
 //different syntax for assigning variables
 const conferenceTickets = 50
 var conferenceName string = "Go Conference"
 //uint will not take negative integers
 var remainingTickets uint = 50
-var bookings = []string{}
+//initialize a list of maps
+var bookings = make([]map[string]string, 0)
+
+type UserData struct {
+	firstName string
+	lastName string
+	email string
+	numberOfTickets uint
+}
 
 func main(){
 
@@ -23,7 +32,7 @@ func main(){
 		firstName, lastName, email, userTickets := getUserInput()
 
 		//returned variables pulled from the validateUserInput function
-		isValidName, isValidEmail, isValidTicketNumber := helper.ValidateUserInput(firstName, lastName, email, userTickets, remainingTickets)
+		isValidName, isValidEmail, isValidTicketNumber := validateUserInput(firstName, lastName, email, userTickets, remainingTickets)
 
 		if isValidEmail && isValidName && isValidTicketNumber {
 			//logic for booking ticket to decrement ticket total and who is booking the ticket
@@ -60,12 +69,19 @@ func greetUsers() {
 	fmt.Println("Get your tickets here!")
 }
 
+//validates user input to prevent negative numbers, false emails, and over booking of tickets
+func validateUserInput(firstName string, lastName string, email string, userTickets uint, remainingTickets uint) (bool, bool, bool){
+	isValidName := len(firstName) >= 2 && len(lastName) >= 2 
+	isValidEmail := strings.Contains(email, "@")
+	isValidTicketNumber := userTickets > 0 && userTickets <= remainingTickets
+	return isValidName, isValidEmail, isValidTicketNumber
+}
+
 //when returning you have function parameters and output parameters 
 func getFirstNames() []string {
 	firstNames := []string{}
 	for _, booking := range bookings {
-		var names = strings.Fields(booking)
-		firstNames = append(firstNames, names[0])
+		firstNames = append(firstNames, booking["firstName"])
 	}
 	return firstNames
 }
@@ -95,7 +111,16 @@ func getUserInput() (string, string, string, uint){
 //logic for users to book tickets
 func bookTicket(userTickets uint, firstName string, lastName string, email string){
 	remainingTickets = remainingTickets - userTickets
-	bookings = append(bookings, firstName + " " + lastName)
+
+	//create map for user info
+	var userData = make(map[string]string)
+	userData["firstName"] = firstName
+	userData["lastName"] = lastName
+	userData["email"] = email
+	userData["ticketsReserved"] = strconv.FormatUint(uint64(userTickets), 10)
+
+	bookings = append(bookings, userData)
+	fmt.Printf("list of bookings is %v \n", bookings)
 
 	fmt.Printf("Thank you %v %v for booking %v tickets.  You will receive a confirmation email at %v\n", firstName, lastName, userTickets, email);
 	fmt.Printf("%v tickets remaining for %v \n", remainingTickets, conferenceName)
