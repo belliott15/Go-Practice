@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 	"time"
+	"sync"
 )
 
 //different syntax for assigning variables
@@ -22,12 +23,14 @@ type UserData struct {
 	ticketsReserved uint
 }
 
+var wg = sync.WaitGroup{}
+
 func main(){
 
 	greetUsers()
 
 	//for loops have a default true conditional that can be altered to fit your own conditionals
-	for remainingTickets > 0 && len(bookings) < 50 {
+	// for remainingTickets > 0 && len(bookings) < 50 {
 		//access user input and values
 		firstName, lastName, email, userTickets := getUserInput()
 
@@ -41,6 +44,7 @@ func main(){
 			//send email of ticket to user
 			//using go keyword it will create a breakout thread to allow the rest of the code to continually run
 			//allows concurrent users to book tickets and still remains responsive
+			wg.Add(1)
 			go sendTicket(userTickets, firstName, lastName, email)
 
 			//call function print first names
@@ -50,7 +54,7 @@ func main(){
 			//conditional to prevent booking if event is sold out
 			if remainingTickets == 0 {
 				fmt.Println("Sorry but this event has been sold out.")
-				break
+				// break
 			}
 		// conditional to prevent user error and validate user input
 		} else {
@@ -64,7 +68,8 @@ func main(){
 				fmt.Printf("Number of tickets requested is invalid. \n")
 			}
 		}
-	}
+		wg.Wait()
+	// }
 }
 
 //print user 
@@ -138,4 +143,5 @@ func sendTicket(userTickets uint, firstName string, lastName string, email strin
 	fmt.Println("#####################")
 	fmt.Printf("Sending ticket: \n %v  \n to email address %v \n", ticket, email)
 	fmt.Println("#####################")
+	wg.Done()
 }
