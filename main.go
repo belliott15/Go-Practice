@@ -39,7 +39,9 @@ func main(){
 			bookTicket(userTickets, firstName, lastName, email)
 
 			//send email of ticket to user
-			sendTicket(userTickets, firstName, lastName, email)
+			//using go keyword it will create a breakout thread to allow the rest of the code to continually run
+			//allows concurrent users to book tickets and still remains responsive
+			go sendTicket(userTickets, firstName, lastName, email)
 
 			//call function print first names
 			firstNames := getFirstNames()
